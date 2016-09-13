@@ -1,5 +1,5 @@
 # Description:
-#   HAL9000 responses (simple sample script)
+#   Hugo responses (he deserves it!)
 #
 
 module.exports = (robot) ->
@@ -10,9 +10,9 @@ module.exports = (robot) ->
 		"q treta",
 		"lixo",
 		"não inventes hugo",
-		"não acreditem no q ele diz"
+		"só inventas hugo"
 	]
 
 	robot.hear /.+/, (msg) ->
-		if msg.message.user.name == 'hugo' && msg.message.text.search(/(yo+|ola|boas)/i) < 0 && Math.random() < 0.05
+		if msg.message.user.name == 'hugo' && msg.message.text.search(/(yo+|ola|boas)/i) < 0 && Math.random() < 0.1
 			msg.send msg.random responses
