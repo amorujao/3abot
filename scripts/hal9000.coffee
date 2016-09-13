@@ -5,16 +5,23 @@
 getUser = (msg) ->
 	if msg.message.user.real_name != undefined then msg.message.user.real_name else msg.message.user.name
 
+getFirstName = (msg) ->
+	if msg.message.user.real_name != undefined
+		names = msg.message.user.real_name.split(" ")
+		names[0]
+	else
+		msg.message.user.name
+
 module.exports = (robot) ->
 
 	bot = '('+robot.name+'|'+robot.alias+')';
 
-	robot.respond /open the (.*) doors/i, (res) ->
-		doorType = res.match[1]
+	robot.hear /open the (.*) doors/i, (msg) ->
+		doorType = msg.match[1]
 		if doorType is "pod bay"
-			res.reply "I'm sorry, " + getUser(res) + ". I'm afraid I can't do that."
+			msg.send "I'm sorry, " + getFirstName(msg) + ". I'm afraid I can't do that."
 		else
-			res.reply "Opening #{doorType} doors"
+			msg.send "Opening #{doorType} doors"
 
-	robot.hear new RegExp("good morning " + bot, "i"), (res) ->
-		res.reply "Good morning, " + getUser(res) + "."
+	robot.hear new RegExp("good morning " + bot, "i"), (msg) ->
+		msg.send "Good morning, " + getFirstName(msg) + "."
