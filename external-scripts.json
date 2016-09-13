@@ -7,6 +7,7 @@
   "hubot-maps",
   "hubot-redis-brain",
   "hubot-rules",
-  "hubot-youtube",
-  "hubot-currency"
+  "hubot-meme",
+  "hubot-responders",
+  "hubot-roll"
 ]
