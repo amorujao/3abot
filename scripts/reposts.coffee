@@ -6,10 +6,10 @@
 
 module.exports = (robot) ->
 
-	DATA_KEY = "links"
+	DATA_KEY = "reposts.links"
 	MAX_LINKS = 5000
 
-	_links = robot.brain.data[DATA_KEY]
+	_links = robot.brain.get(DATA_KEY)
 	_links ?= []
 
 	robot.respond /list links/i, (msg) ->
@@ -22,7 +22,7 @@ module.exports = (robot) ->
 
 	robot.hear /(https?:\/\/|www\.)[^\s\/$.?#].[^\s]+\/[^\s]+/i, (msg) ->
 
-		if msg.message.user.name is robot.name
+		if ! msg.message.user.name or msg.message.user.name is robot.name 
 			return
 
 		url = msg.match[0].split("#")[0]
@@ -55,4 +55,4 @@ module.exports = (robot) ->
 			saveData = true
 
 		if saveData
-			robot.brain.data[DATA_KEY] = _links
+			robot.brain.set(DATA_KEY, _links)
