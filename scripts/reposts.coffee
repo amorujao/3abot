@@ -47,6 +47,7 @@ module.exports = (robot) ->
 			dateObj = match[3]
 			dateStr = "#{dateObj.getFullYear()}-#{dateObj.getMonth()}-#{dateObj.getDate()} @ #{dateObj.getHours()}:#{dateObj.getMinutes()}"
 			msg.send "repost (posted by " + match[1] + " on " + dateStr + ")"
+			msg.send "https://pbs.twimg.com/media/CVkAep3UkAAXUXT.jpg"
 		else
 			_links.push [url, msg.message.user.name, msg.message.user.room, new Date()]
 
