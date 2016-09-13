@@ -9,6 +9,10 @@ module.exports = (robot) ->
 	DATA_KEY = "reposts.links"
 	MAX_LINKS = 5000
 
+	_responses = [
+		"https://pbs.twimg.com/media/CVkAep3UkAAXUXT.jpg"
+	]
+
 	_links = robot.brain.get(DATA_KEY)
 	_links ?= []
 
@@ -22,7 +26,7 @@ module.exports = (robot) ->
 
 	robot.hear /(https?:\/\/|www\.)[^\s\/$.?#].[^\s]+\/[^\s]+/i, (msg) ->
 
-		if ! msg.message.user.name or msg.message.user.name is robot.name 
+		if ! msg.message.user.name or msg.message.user.name is robot.name or msg.message.user.name is "slackbot" 
 			return
 
 		url = msg.match[0].split("#")[0]
@@ -47,7 +51,7 @@ module.exports = (robot) ->
 			dateObj = match[3]
 			dateStr = "#{dateObj.getFullYear()}-#{dateObj.getMonth()}-#{dateObj.getDate()} @ #{dateObj.getHours()}:#{dateObj.getMinutes()}"
 			msg.send "repost (posted by " + match[1] + " on " + dateStr + ")"
-			msg.send "https://pbs.twimg.com/media/CVkAep3UkAAXUXT.jpg"
+			msg.send msg.random _responses
 		else
 			_links.push [url, msg.message.user.name, msg.message.user.room, new Date()]
 
