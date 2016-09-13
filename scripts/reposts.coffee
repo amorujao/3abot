@@ -13,14 +13,19 @@ module.exports = (robot) ->
 	_links ?= []
 
 	robot.respond /list links/i, (msg) ->
-		msg.send "Links tracked so far, from oldest to latest:"
-		for link in _links
-			msg.send link[0]
+		if _links.length is 0
+			msg.send "No links have been tracked so far."
+		else
+			msg.send "Links tracked so far, from oldest to latest:"
+			for link, i in _links
+				msg.send (i + 1) + ": " + link[0]
 
 	robot.hear /(https?:\/\/|www\.)[^\s\/$.?#].[^\s]+\/[^\s]+/i, (msg) ->
-		urlParts = msg.match[0].split("#")
-		url = urlParts[0]
 
+		if msg.message.user.name is robot.name
+			return
+
+		url = msg.match[0].split("#")[0]
 		match = null
 		saveData = true
 		for link, i in _links
