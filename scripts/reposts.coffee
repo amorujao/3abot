@@ -7,6 +7,7 @@
 class RepostTracker
 
 	LINKS_KEY = "reposts.links"
+	REPOSTERS_KEY = "reposts.reposters"
 	MAX_LINKS = 10000
 	REPOST_MSGS = [
 		# shame nun static images
@@ -26,9 +27,13 @@ class RepostTracker
 
 	clear: ->
 		@robot.brain.set(LINKS_KEY, [])
+		@robot.brain.set(REPOSTERS_KEY, {})
 
 	links: ->
 		@robot.brain.get(LINKS_KEY)
+
+	reposters: ->
+		@robot.brain.get(REPOSTERS_KEY)
 
 	add: (link) ->
 		l = @links()
@@ -44,6 +49,8 @@ class RepostTracker
 				msg.send "repost"
 				msg.send link[1] + " posted this on " + dateStr
 				msg.send msg.random REPOST_MSGS
+				reposters = @reposters()
+				reposters[msg.message.user.name] = (reposters[msg.message.user.name] or 0) + 1
 				return
 
 		@add([url, msg.message.user.real_name or msg.message.user.name, msg.message.user.room, new Date()])
@@ -59,15 +66,25 @@ module.exports = (robot) ->
 		"github"
 	]
 
-	robot.respond /reposts clear/i, (msg) ->
+	robot.respond /clear repost data/i, (msg) ->
+
+		if msg.message.user.name isnt "amorujao"
+			msg.send "Access denied."
+			return
+
 		linkCount = tracker.links().length
 		if linkCount > 0
 			tracker.clear()
-			msg.send "Deleted " + linkCount + " links."
+			msg.send "Deleted " + linkCount + " link(s) and reset repost counters."
 		else
 			msg.send "There were no links to delete."
 
-	robot.respond /reposts list links/i, (msg) ->
+	robot.respond /list repost links/i, (msg) ->
+
+		if msg.message.user.name isnt "amorujao"
+			msg.send "Access denied."
+			return
+
 		links = tracker.links()
 		if links.length is 0
 			msg.send "No links have been tracked so far."
@@ -75,6 +92,16 @@ module.exports = (robot) ->
 			msg.send "Links tracked:"
 			for link, i in links
 				msg.send (i + 1) + ": " + link[0]
+
+	robot.respond /list reposters/i, (msg) ->
+
+		reposters = tracker.reposters()
+		if Object.keys(reposters).length is 0
+			msg.send "No reposts have been tracked so far."
+		else
+			msg.send "Reposts tracked:"
+			for name, count of reposters
+				msg.send name + ": " + count
 
 	robot.hear /(https?:\/\/)([^\s\/$.?#].[^\s#]+)(#[^\s]*)?(\s|$)/i, (msg) ->
 
