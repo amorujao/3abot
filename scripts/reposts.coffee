@@ -4,60 +4,81 @@
 # Inspired by: https://github.com/ClaudeBot/hubot-links/blob/master/src/hubot-links.coffee
 #
 
-module.exports = (robot) ->
+class RepostTracker
 
-	DATA_KEY = "reposts.links"
-	MAX_LINKS = 5000
-
-	_responses = [
-		"https://pbs.twimg.com/media/CVkAep3UkAAXUXT.jpg"
+	LINKS_KEY = "reposts.links"
+	MAX_LINKS = 10000
+	REPOST_MSGS = [
+		# shame nun static images
+		"https://pbs.twimg.com/media/CVkAep3UkAAXUXT.jpg",
+		# shame nun gifs
+		"http://i.imgur.com/FidZknJ.gif",
+		"https://m.popkey.co/6bee24/6GJWk.gif",
+		"https://m.popkey.co/f6d204/LWYby_s-200x150.gif",
+		"https://media.tenor.co/images/a0c47819d0ff3547b6f9e943aecdc3ec/raw"
 	]
 
-	_links = robot.brain.get(DATA_KEY)
-	_links ?= []
+	constructor: (@robot) ->
+		@clear()
+		@robot.brain.on 'loaded', (data) =>
+			if ! @links()
+				@clear()
 
-	robot.respond /list links/i, (msg) ->
-		if _links.length is 0
+	clear: ->
+		@robot.brain.set(LINKS_KEY, [])
+
+	links: ->
+		@robot.brain.get(LINKS_KEY)
+
+	add: (link) ->
+		l = @links()
+		l.push link
+		if l.length > MAX_LINKS
+			l.splice(0, l.length - MAX_LINKS)
+
+	track: (msg, url) ->
+		for link in @links()
+			if url is link[0]
+				dateObj = new Date(link[3])
+				dateStr = "#{dateObj.getFullYear()}-#{dateObj.getMonth()}-#{dateObj.getDate()} @ #{dateObj.getHours()}:#{dateObj.getMinutes()}"
+				msg.send "repost"
+				msg.send link[1] + " posted this on " + dateStr
+				msg.send msg.random REPOST_MSGS
+				return
+
+		@add([url, msg.message.user.real_name or msg.message.user.name, msg.message.user.room, new Date()])
+
+module.exports = (robot) ->
+
+	tracker = new RepostTracker(robot)
+
+	IGNORE_USERS = [
+		robot.name,
+		"slackbot",
+		"RightGIF",
+		"github"
+	]
+
+	robot.respond /reposts clear/i, (msg) ->
+		linkCount = tracker.links().length
+		if linkCount > 0
+			tracker.clear()
+			msg.send "Deleted " + linkCount + " links."
+		else
+			msg.send "There were no links to delete."
+
+	robot.respond /reposts list links/i, (msg) ->
+		links = tracker.links()
+		if links.length is 0
 			msg.send "No links have been tracked so far."
 		else
-			msg.send "Links tracked so far, from oldest to latest:"
-			for link, i in _links
+			msg.send "Links tracked:"
+			for link, i in links
 				msg.send (i + 1) + ": " + link[0]
 
-	robot.hear /(https?:\/\/|www\.)[^\s\/$.?#].[^\s]+\/[^\s]+/i, (msg) ->
+	robot.hear /(https?:\/\/)([^\s\/$.?#].[^\s#]+)(#[^\s]*)?(\s|$)/i, (msg) ->
 
-		if ! msg.message.user.name or msg.message.user.name is robot.name or msg.message.user.name is "slackbot" 
+		if ! msg.message.user.name or msg.message.user.name in IGNORE_USERS 
 			return
 
-		url = msg.match[0].split("#")[0]
-		match = null
-		saveData = true
-		for link, i in _links
-			if url is link[0]
-				match = link
-				saveData = false
-				break
-			# partial match; update data with the smallest version
-			if url.indexOf(link[0]) isnt -1 or link[0].indexOf(url) isnt -1
-				if link[0].length > url.length
-					link[0] = url
-					_links[i] = link
-				else
-					saveData = false
-				match = link
-				break
-
-		if match isnt null
-			dateObj = match[3]
-			dateStr = "#{dateObj.getFullYear()}-#{dateObj.getMonth()}-#{dateObj.getDate()} @ #{dateObj.getHours()}:#{dateObj.getMinutes()}"
-			msg.send "repost (posted by " + match[1] + " on " + dateStr + ")"
-			msg.send msg.random _responses
-		else
-			_links.push [url, msg.message.user.name, msg.message.user.room, new Date()]
-
-		if _links.length > MAX_LINKS
-			_links.splice(0, _links.length - MAX_LINKS)
-			saveData = true
-
-		if saveData
-			robot.brain.set(DATA_KEY, _links)
+		tracker.track(msg, msg.match[2])
