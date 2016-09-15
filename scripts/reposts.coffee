@@ -72,7 +72,7 @@ module.exports = (robot) ->
 
 	robot.respond /clear repost data/i, (msg) ->
 
-		if msg.message.user.name isnt "amorujao"
+		if not msg.message.user.is_owner
 			msg.send "Access denied."
 			return
 
@@ -83,9 +83,22 @@ module.exports = (robot) ->
 		else
 			msg.send "There were no links to delete."
 
+	robot.respond /count repost links/i, (msg) ->
+		msg.send "So far, I've tracked " + tracker.links().length + " link(s)."
+
+	robot.respond /count reposts/i, (msg) ->
+
+		reposters = tracker.reposters()
+		count = 0
+		for name, c of reposters
+			count += c
+		msg.send "Tracked " + count + " repost(s)."
+		if count > 0
+			msg.send "You're welcome."
+
 	robot.respond /list repost links/i, (msg) ->
 
-		if msg.message.user.name isnt "amorujao"
+		if not msg.message.user.is_owner
 			msg.send "Access denied."
 			return
 
@@ -117,5 +130,9 @@ module.exports = (robot) ->
 		for prefix in IGNORE_URLS_PREFIX
 			if url.slice(0, prefix.length) is prefix
 				return
+
+		# assume that posts with newlines are "Shares", which shouldn't count as reposts
+		if msg.message.text.search("\n") >= 0
+			return
 
 		tracker.track(msg, url)
