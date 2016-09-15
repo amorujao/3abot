@@ -66,6 +66,10 @@ module.exports = (robot) ->
 		"github"
 	]
 
+	IGNORE_URLS_PREFIX = [
+		"giphy.com/gifs/"
+	]
+
 	robot.respond /clear repost data/i, (msg) ->
 
 		if msg.message.user.name isnt "amorujao"
@@ -108,4 +112,10 @@ module.exports = (robot) ->
 		if ! msg.message.user.name or msg.message.user.name in IGNORE_USERS 
 			return
 
-		tracker.track(msg, msg.match[2])
+		url = msg.match[2]
+
+		for prefix in IGNORE_URLS_PREFIX
+			if url.slice(0, prefix.length) is prefix
+				return
+
+		tracker.track(msg, url)
