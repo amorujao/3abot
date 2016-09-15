@@ -53,7 +53,7 @@ class RepostTracker
 				reposters[msg.message.user.name] = (reposters[msg.message.user.name] or 0) + 1
 				return
 
-		@add([url, msg.message.user.real_name or msg.message.user.name, msg.message.user.room, new Date()])
+		@add([url, msg.message.user.name, msg.message.user.room, new Date()])
 
 module.exports = (robot) ->
 
