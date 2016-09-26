@@ -45,7 +45,7 @@ class RepostTracker
 		for link in @links()
 			if url is link[0]
 				dateObj = new Date(link[3])
-				dateStr = "#{dateObj.getFullYear()}-#{dateObj.getMonth()}-#{dateObj.getDate()} @ #{dateObj.getHours()}:#{dateObj.getMinutes()}"
+				dateStr = "#{dateObj.getFullYear()}-#{dateObj.getMonth()+1}-#{dateObj.getDate()} @ #{dateObj.getHours()}:#{dateObj.getMinutes()}"
 				msg.send "repost"
 				msg.send link[1] + " posted this on " + dateStr
 				msg.send msg.random REPOST_MSGS
