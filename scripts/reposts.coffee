@@ -68,7 +68,8 @@ module.exports = (robot) ->
 
 	IGNORE_URLS_PREFIX = [
 		"giphy.com/gifs/",
-    "esquerda.net"
+		"esquerda.net",
+		"amazon.", "www.amazon."
 	]
 
 	robot.respond /clear repost data/i, (msg) ->
