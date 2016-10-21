@@ -7,6 +7,7 @@ module.exports = (robot) ->
 	# Estrangeirismos
 	robot.hear	/applica(c|ç)(a|ã)o/i,			(msg) -> msg.send ":fpf: _aplicação_ :fpf:"
 	robot.hear	/contracto/i, 				(msg) -> msg.send ":fpf: _contrato_ :fpf:"
+	robot.hear	/producto/i,				(msg) -> msg.send ":fpf: _produto_ :fpf:"
 
 	# Misc errors
 	robot.hear	/copy(-|\s)past([^\w]|$)/i,				(msg) -> msg.send ":grammar: _copy-paste_ :grammar:"
