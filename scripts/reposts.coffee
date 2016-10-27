@@ -68,7 +68,6 @@ module.exports = (robot) ->
 
 	IGNORE_URLS_PREFIX = [
 		"giphy.com/gifs/",
-		"esquerda.net",
 		"amazon.", "www.amazon."
 	]
 
@@ -122,7 +121,7 @@ module.exports = (robot) ->
 			for name, count of reposters
 				msg.send name + ": " + count
 
-	robot.hear /(https?:\/\/)([^\s\/$.?#].[^\s#]+)(#[^\s]*)?(\s|$)/i, (msg) ->
+	robot.hear /(https?:\/\/)([^\s\/$.?#].[^\/\s#]+\/[^\s#]+)(#[^\s]*)?(\s|$)/i, (msg) ->
 
 		if ! msg.message.user.name or msg.message.user.name in IGNORE_USERS 
 			return
