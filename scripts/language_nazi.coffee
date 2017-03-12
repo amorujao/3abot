@@ -17,7 +17,7 @@ module.exports = (robot) ->
 		"It looks like your face caught on fire and someone tried to put it out with a fork.",
 		"You are so ugly that when your mama dropped you off at school she got a fine for littering.",
 		"If you were twice as smart, you'd still be stupid.",
-		"Your so ugly when you popped out the doctor said aww what a treasure and your mom said yeah lets bury it",
+		"You're so ugly when you popped out the doctor said aww what a treasure and your mom said yeah lets bury it",
 		"You are the reason people are blind",
 		"Dumbass.",
 		"We all sprang from apes, but you didn't spring far enough.",
