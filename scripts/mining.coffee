@@ -14,7 +14,7 @@ module.exports = (robot) ->
   NICEHASH_API_URL = "https://api.nicehash.com/api"
   BTC_QUOTES_URL = "http://api.coindesk.com/v1/bpi/currentprice/EUR.json"
 
-  robot.respond /rig/i, (msg) ->
+  robot.hear /rig statu?s/i, (msg) ->
 
     msg.send "Loading miner stats..."
     msg.http(NICEHASH_API_URL)
