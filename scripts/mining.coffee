@@ -44,7 +44,7 @@ module.exports = (robot) ->
             profit_mbtc = round(profitability * 1000, 5)
             unpaid_mbtc = round(unpaid_balance * 1000, 5)
 
-            msg.send "Current profitability: " + profit_mbtc + " mBTC/day (" + profit_eur + " EUR/day)"
-            msg.send "Unpaid balance: " + unpaid_mbtc + " mBTC (" + unpaid_eur + " EUR)"
+            msg.send "Current profitability: " + profit_mbtc + " mBTC/day ≈ " + profit_eur + " EUR/day"
+            msg.send "Unpaid balance: " + unpaid_mbtc + " mBTC ≈ " + unpaid_eur + " EUR"
             #msg.send "Source: " + NICEHASH_API_URL + "?method=stats.provider.ex&addr=" + BTC_ADDRESS
-            msg.send "More info: " + NICEHASH_MINER_PAGE_URL
+            msg.send "More info: " + NICEHASH_MINER_PAGE_URL + " | 1 BTC ≈ " + round(eurbtc, 2) + " EUR"
