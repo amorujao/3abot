@@ -35,8 +35,9 @@ class Rig
           algos = []
           for algo in miner.result.current
             if Object.keys(algo.data[0]).length > 0
-              algos.push algo.name + " @ " + algo.data[0].a + " " + algo.suffix + "/s"
-              profitability += (Number) algo.data[0].a * (Number) algo.profitability
+              if algo.data[0].a != undefined
+                algos.push algo.name + " @ " + algo.data[0].a + " " + algo.suffix + "/s"
+                profitability += (Number) algo.data[0].a * (Number) algo.profitability
             unpaid_balance += (Number) algo.data[1]
           if algos.length > 0
             msg.send "Running: " + algos.join(' + ')
