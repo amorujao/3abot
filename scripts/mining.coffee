@@ -55,13 +55,13 @@ class Rig
                 profit_eur = round(profitability * eurbtc, 2)
                 unpaid_eur = round(unpaid_balance * eurbtc, 2)
 
-                #profit_mbtc = round(profitability * 1000, 5)
-                #unpaid_mbtc = round(unpaid_balance * 1000, 5)
-
                 text = ""
                 if algos.length > 0
-                  text += "Profitability: *" + profit_eur + " EUR/day* | "
-                text += "Unpaid balance: *" + unpaid_eur + " EUR* | 1 BTC ≈ " + round(eurbtc, 2) + " EUR"
+                  text += "Profit/day: " + round(profitability * 1000000) + " μBTC ≈ *" + profit_eur + " €*"
+                  text += " :pick: "
+                text += "Unpaid: " + round(unpaid_balance * 1000000) + " μBTC ≈ *" + unpaid_eur + " €*"
+                text += " :pick: "
+                text += "1 BTC ≈ " + round(eurbtc, 2) + " €"
                 msg.send text
                 #msg.send "Source: " + NICEHASH_API_URL + "?method=stats.provider.ex&addr=" + BTC_ADDRESS
 
@@ -71,3 +71,17 @@ module.exports = (robot) ->
 
 	robot.hear /rig statu?s/i, (msg) ->
 		rig.status(msg)
+
+	robot.hear /rig (page|url)/i, (msg) ->
+		msg.send NICEHASH_MINER_PAGE_URL
+
+	robot.hear /rig rates?/i, (msg) ->
+    msg.http(BTC_QUOTES_URL)
+      .get() (err, res, body) ->
+        if err
+          msg.send "Failed to fetch Bitcoin quotes :cry:"
+        else
+          quotes = JSON.parse body
+          btceur = quotes.bpi.EUR.rate_float
+          btcusd = quotes.bpi.USD.rate_float
+          msg.send "1 BTC ≈ " + round(btceur, 2) + " EUR ≈ " + round(btcusd, 2) + " USD"
