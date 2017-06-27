@@ -7,6 +7,13 @@ NICEHASH_URL = "https://new.nicehash.com"
 NICEHASH_MINER_PAGE_URL = NICEHASH_URL + "/miner/" + BTC_ADDRESS
 NICEHASH_API_URL = "https://api.nicehash.com/api"
 BTC_QUOTES_URL = "http://api.coindesk.com/v1/bpi/currentprice/EUR.json"
+HOUSE_ON_FIRE_MSGS = [
+  ":fearful:",
+  ":fire::fire::fire::fire::fire::fire::fire::fire::fire:",
+  "Não façam perguntas para as quais não querem ouvir a resposta :|",
+  "Erm... :fearful: command not found, please try again",
+  "https://media.giphy.com/media/3o6ZtjsJwjOsIfOZd6/giphy.gif"
+]
 
 round = (value, precision) ->
   multiplier = Math.pow(10, precision || 0)
@@ -42,7 +49,7 @@ class Rig
           if algos.length > 0
             msg.send "Running: " + algos.join(' + ')
           else
-            msg.send ":fire::fire::fire: *MINER IS NOT RUNNING* :fire::fire::fire:"
+            msg.send ":fire::fire::fire: *RASPA SALVA O RIG!!* :fire::fire::fire:"
 
           msg.http(BTC_QUOTES_URL)
             .get() (err2, res2, body2) ->
@@ -86,3 +93,24 @@ module.exports = (robot) ->
           btceur = quotes.bpi.EUR.rate_float
           btcusd = quotes.bpi.USD.rate_float
           msg.send "1 BTC ≈ " + round(btceur, 2) + " EUR ≈ " + round(btcusd, 2) + " USD"
+
+  robot.hear /a casa do raspa já ardeu\?/i, (msg) ->
+    msg.send "Checking..."
+    msg.http(NICEHASH_API_URL)
+      .query(
+        method: 'stats.provider.ex',
+        addr: BTC_ADDRESS)
+      .get() (err, res, body) ->
+
+        if err
+          msg.send "Nicehash API request failed :cry: please use the miner page instead:"
+          msg.send NICEHASH_MINER_PAGE_URL
+        else
+          miner = JSON.parse body
+          current = JSON.stringify miner.result.current
+          for algo in miner.result.current
+            if Object.keys(algo.data[0]).length > 0
+              msg.send "Ainda não!"
+              return
+
+        msg.send msg.random HOUSE_ON_FIRE_MSGS
