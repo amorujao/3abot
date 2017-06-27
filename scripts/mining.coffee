@@ -2,20 +2,21 @@
 #   Mining helper tools.
 #
 
+BTC_ADDRESS = "1MBXSHNF9ttQ6a3sbJ9M98tyqEFgt8LmVm"
+NICEHASH_URL = "https://new.nicehash.com"
+NICEHASH_MINER_PAGE_URL = NICEHASH_URL + "/miner/" + BTC_ADDRESS
+NICEHASH_API_URL = "https://api.nicehash.com/api"
+BTC_QUOTES_URL = "http://api.coindesk.com/v1/bpi/currentprice/EUR.json"
+
 round = (value, precision) ->
   multiplier = Math.pow(10, precision || 0)
   Math.round(value * multiplier) / multiplier
 
-module.exports = (robot) ->
+class Rig
 
-  BTC_ADDRESS = "1MBXSHNF9ttQ6a3sbJ9M98tyqEFgt8LmVm"
-  NICEHASH_URL = "https://new.nicehash.com"
-  NICEHASH_MINER_PAGE_URL = NICEHASH_URL + "/miner/" + BTC_ADDRESS
-  NICEHASH_API_URL = "https://api.nicehash.com/api"
-  BTC_QUOTES_URL = "http://api.coindesk.com/v1/bpi/currentprice/EUR.json"
+	constructor: (@robot) ->
 
-  robot.hear /rig statu?s/i, (msg) ->
-
+	status: (msg) ->
     #msg.send "Loading miner stats..."
     msg.http(NICEHASH_API_URL)
       .query(
@@ -63,3 +64,10 @@ module.exports = (robot) ->
                 text += "Unpaid balance: *" + unpaid_eur + " EUR* | 1 BTC ≈ " + round(eurbtc, 2) + " EUR"
                 msg.send text
                 #msg.send "Source: " + NICEHASH_API_URL + "?method=stats.provider.ex&addr=" + BTC_ADDRESS
+
+module.exports = (robot) ->
+
+	rig = new Rig(robot)
+
+	robot.hear /rig statu?s/i, (msg) ->
+		rig.status(msg)
