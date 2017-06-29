@@ -8,7 +8,8 @@ ADDRESSES = {
   maikk: "1Kw17Mk93gzHw3MPEorHPaoUqEJxKG5Y9o",
   fontela: "14MbxyGMdvSyTZnYz29gCA57TQWZPamaJf",
   alcobz: "1PX5DfRZmS1iy4z8eomeVLTm1wnGGQ3DaW",
-  raspa: "1KzcpwsvPprriApyt2vKyXueero3AL1qzS"
+  raspa: "1KzcpwsvPprriApyt2vKyXueero3AL1qzS",
+  wise: "12PH87Hb8iD7YNWpz4MGVr5oE6GjsNsTtN", uaise: "12PH87Hb8iD7YNWpz4MGVr5oE6GjsNsTtN"
 }
 
 NICEHASH_URL = "https://new.nicehash.com"
