@@ -60,6 +60,7 @@ class Rig
             return
           profitability = 0
           unpaid_balance = 0
+          paid_balance = 0
           algos = []
           for algo in miner.result.current
             if Object.keys(algo.data[0]).length > 0
@@ -67,30 +68,32 @@ class Rig
                 algos.push algo.name + " @ " + algo.data[0].a + " " + algo.suffix + "/s"
                 profitability += (Number) algo.data[0].a * (Number) algo.profitability
             unpaid_balance += (Number) algo.data[1]
+          for payment in miner.result.payments
+            paid_balance += payment.amount
           if algos.length > 0
-            msg.send "Running: " + algos.join(' + ')
+            msg.send "Mining: " + algos.join(' + ')
           else
-            msg.send ":fire::fire::fire: *RASPA SALVA O RIG!!* :fire::fire::fire:"
+            msg.send ":fire::fire::fire: *RIG OFFLINE* :fire::fire::fire:"
 
           msg.http(BTC_QUOTES_URL)
             .get() (err2, res2, body2) ->
               if err2
-                msg.send "Failed to fetch BTCEUR quote :cry: please use the miner page instead:"
-                msg.send minerPage address
+                msg.send "Failed to fetch BTCEUR quote :cry: please use the miner page instead:\n" + minerPage address
               else
                 quotes = JSON.parse body2
                 eurbtc = quotes.bpi.EUR.rate_float
 
                 profit_eur = round(profitability * eurbtc, 2)
                 unpaid_eur = round(unpaid_balance * eurbtc, 2)
+                paid_eur   = round(paid_balance * eurbtc, 2)
 
                 text = ""
                 if algos.length > 0
-                  text += "Profit/day: " + round(profitability * 1000000) + " μBTC ≈ *" + profit_eur + " €*"
-                  text += " :pick: "
-                text += "Unpaid: " + round(unpaid_balance * 1000000) + " μBTC ≈ *" + unpaid_eur + " €*"
-                text += " :pick: "
-                text += "1 BTC ≈ " + round(eurbtc, 2) + " €"
+                  text += "*Earnings/day*: " + round(profitability * 1000000) + " μBTC ≈ *" + profit_eur + " €*\n"
+                text += "*Unpaid*: " + round(unpaid_balance * 1000000) + " μBTC ≈ *" + unpaid_eur + " €*\n"
+                if paid_balance > 0
+                  text += "*Paid*: " + round(paid_balance * 1000000) + " μBTC ≈ *" + paid_eur + " €*\n"
+                text += "_1 BTC ≈ " + round(eurbtc, 2) + " €_"
                 msg.send text
                 #msg.send "Source: " + NICEHASH_API_URL + "?method=stats.provider.ex&addr=" + address
 
