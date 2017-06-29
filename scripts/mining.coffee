@@ -2,9 +2,16 @@
 #   Mining helper tools.
 #
 
-BTC_ADDRESS = "1MBXSHNF9ttQ6a3sbJ9M98tyqEFgt8LmVm"
+ADDRESSES = {
+  default: "1MBXSHNF9ttQ6a3sbJ9M98tyqEFgt8LmVm",
+  ricardo: "1FmV8YK553H2KX7ArZDMCWo2uaW2ZCFCKt",
+  maikk: "1Kw17Mk93gzHw3MPEorHPaoUqEJxKG5Y9o",
+  fontela: "14MbxyGMdvSyTZnYz29gCA57TQWZPamaJf",
+  alcobz: "1PX5DfRZmS1iy4z8eomeVLTm1wnGGQ3DaW",
+  raspa: "1KzcpwsvPprriApyt2vKyXueero3AL1qzS"
+}
+
 NICEHASH_URL = "https://new.nicehash.com"
-NICEHASH_MINER_PAGE_URL = NICEHASH_URL + "/miner/" + BTC_ADDRESS
 NICEHASH_API_URL = "https://api.nicehash.com/api"
 BTC_QUOTES_URL = "http://api.coindesk.com/v1/bpi/currentprice/EUR.json"
 HOUSE_ON_FIRE_MSGS = [
@@ -19,24 +26,38 @@ round = (value, precision) ->
   multiplier = Math.pow(10, precision || 0)
   Math.round(value * multiplier) / multiplier
 
+minerPage = (address) ->
+  NICEHASH_URL + "/miner/" + address
+
+addressByName = (name) ->
+  if ADDRESSES[name]
+    ADDRESSES[name]
+  else
+    false
+
 class Rig
 
 	constructor: (@robot) ->
 
-	status: (msg) ->
-    #msg.send "Loading miner stats..."
+	status: (msg, address) ->
     msg.http(NICEHASH_API_URL)
       .query(
         method: 'stats.provider.ex',
-        addr: BTC_ADDRESS)
+        addr: address)
       .get() (err, res, body) ->
 
         if err
           msg.send "Nicehash API request failed :cry: please use the miner page instead:"
-          msg.send NICEHASH_MINER_PAGE_URL
+          msg.send minerPage address
         else
           miner = JSON.parse body
           current = JSON.stringify miner.result.current
+          if !miner.result.current
+            if miner.result.error
+              msg.send miner.result.error
+            else
+              msg.send "Unexpected response from Nicehash API: \n" + body
+            return
           profitability = 0
           unpaid_balance = 0
           algos = []
@@ -55,7 +76,7 @@ class Rig
             .get() (err2, res2, body2) ->
               if err2
                 msg.send "Failed to fetch BTCEUR quote :cry: please use the miner page instead:"
-                msg.send NICEHASH_MINER_PAGE_URL
+                msg.send minerPage address
               else
                 quotes = JSON.parse body2
                 eurbtc = quotes.bpi.EUR.rate_float
@@ -71,17 +92,33 @@ class Rig
                 text += " :pick: "
                 text += "1 BTC ≈ " + round(eurbtc, 2) + " €"
                 msg.send text
-                #msg.send "Source: " + NICEHASH_API_URL + "?method=stats.provider.ex&addr=" + BTC_ADDRESS
+                #msg.send "Source: " + NICEHASH_API_URL + "?method=stats.provider.ex&addr=" + address
 
 module.exports = (robot) ->
 
 	rig = new Rig(robot)
 
-	robot.hear /rig statu?s/i, (msg) ->
-		rig.status(msg)
+	robot.hear /rig statu?s( .+)?$/i, (msg) ->
+    address = ADDRESSES.default
+    if msg.match.length > 1 && msg.match[1]
+      name = msg.match[1].substr 1
+      address = addressByName name
+      if !address
+        address = name
+        msg.send "Loading stats for " + address + "..."
+      else
+        msg.send "Loading stats for " + name + "'s rig..."
+    rig.status(msg, address)
 
-	robot.hear /rig (page|url)/i, (msg) ->
-		msg.send NICEHASH_MINER_PAGE_URL
+	robot.hear /rig (page|url)( .+)?/i, (msg) ->
+    address = ADDRESSES.default
+    if msg.match.length > 2 && msg.match[2]
+      name = msg.match[2].substr 1
+      address = addressByName name
+      if !address
+        msg.send "Unknown rig: _" + name + "_"
+        return
+    msg.send minerPage address
 
 	robot.hear /rig rates?/i, (msg) ->
     msg.http(BTC_QUOTES_URL)
@@ -99,12 +136,12 @@ module.exports = (robot) ->
     msg.http(NICEHASH_API_URL)
       .query(
         method: 'stats.provider.ex',
-        addr: BTC_ADDRESS)
+        addr: ADDRESSES.default)
       .get() (err, res, body) ->
 
         if err
           msg.send "Nicehash API request failed :cry: please use the miner page instead:"
-          msg.send NICEHASH_MINER_PAGE_URL
+          msg.send minerPage ADDRESSES.default
         else
           miner = JSON.parse body
           current = JSON.stringify miner.result.current
