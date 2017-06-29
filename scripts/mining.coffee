@@ -102,7 +102,7 @@ module.exports = (robot) ->
 
 	rig = new Rig(robot)
 
-	robot.hear /rig statu?s( .+)?$/i, (msg) ->
+	robot.hear /rig statu?s( \w+)?/i, (msg) ->
     address = ADDRESSES.default
     if msg.match.length > 1 && msg.match[1]
       name = msg.match[1].substr 1
@@ -114,7 +114,7 @@ module.exports = (robot) ->
         msg.send "Loading stats for " + name + "'s rig..."
     rig.status(msg, address)
 
-	robot.hear /rig (page|url)( .+)?/i, (msg) ->
+	robot.hear /rig (page|url)( \w+)?/i, (msg) ->
     address = ADDRESSES.default
     if msg.match.length > 2 && msg.match[2]
       name = msg.match[2].substr 1
