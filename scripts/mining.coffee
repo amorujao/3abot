@@ -44,7 +44,8 @@ class Rig
     msg.http(NICEHASH_API_URL)
       .query(
         method: 'stats.provider.ex',
-        addr: address)
+        addr: address,
+        from: Math.floor(Date.now() / 1000))
       .get() (err, res, body) ->
 
         if err
