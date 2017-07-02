@@ -200,11 +200,11 @@ module.exports = (robot) ->
       address = addressByName name
       if !address
         address = name
+        warnUserIfOffline = ""
         msg.send "Loading stats for " + address + "..."
       else
+        warnUserIfOffline = name
         msg.send "Loading stats for " + name + "'s rig..."
-    else
-      warnUserIfOffline = ""
     rig.status(msg, address, warnUserIfOffline)
 
 	robot.hear /rig (page|url)( \w+)?/i, (msg) ->
@@ -217,7 +217,7 @@ module.exports = (robot) ->
         return
     msg.send minerPage address
 
-	robot.hear /rig earnings (\d+) days( \w+)?$/i, (msg) ->
+	robot.hear /rig earnings (\d+) days?( \w+)?$/i, (msg) ->
     address = ADDRESSES.default
     rigname = ""
     days = msg.match[1]
