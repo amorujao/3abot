@@ -68,7 +68,13 @@ module.exports = (robot) ->
 
 	IGNORE_URLS_PREFIX = [
 		"giphy.com/gifs/",
-		"amazon.", "www.amazon."
+		"amazon.", "www.amazon.",
+		"nicehash.", "www.nicehash.", "new.nicehash.", "api.nicehash.",
+		"pcpartpicker.",
+		"globaldata.pt",
+		"hangouts.google.com"
+		"twitch.tv", "www.twitch.tv",
+		"gamesdonequick.com"
 	]
 
 	robot.respond /clear repost data/i, (msg) ->
