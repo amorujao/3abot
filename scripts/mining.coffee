@@ -5,6 +5,7 @@
 ADDRESSES = {
   default: "1MBXSHNF9ttQ6a3sbJ9M98tyqEFgt8LmVm",
   ricardo: "1FmV8YK553H2KX7ArZDMCWo2uaW2ZCFCKt",
+  holanda: "1GiBJ2hProdj9L4dHkfpKkMcVQ1K2b7b5G",
   maikk: "1Kw17Mk93gzHw3MPEorHPaoUqEJxKG5Y9o",
   fontela: "14MbxyGMdvSyTZnYz29gCA57TQWZPamaJf",
   alcobz: "1PX5DfRZmS1iy4z8eomeVLTm1wnGGQ3DaW",
