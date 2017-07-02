@@ -32,8 +32,8 @@ minerPage = (address) ->
   NICEHASH_URL + "/miner/" + address
 
 addressByName = (name) ->
-  if ADDRESSES[name]
-    ADDRESSES[name]
+  if ADDRESSES[name.toLowerCase()]
+    ADDRESSES[name.toLowerCase()]
   else
     false
 
