@@ -32,6 +32,43 @@ addressByName = (name) ->
   else
     false
 
+secondsToString = (seconds) ->
+  years = Math.floor(seconds / 31536000)
+  days = Math.floor((seconds % 31536000) / 86400)
+  hours = Math.floor(((seconds % 31536000) % 86400) / 3600)
+  minutes = Math.floor((((seconds % 31536000) % 86400) % 3600) / 60)
+  seconds = Math.floor((((seconds % 31536000) % 86400) % 3600) % 60)
+  parts = []
+  if years
+    s = years + " year"
+    if years > 1
+      s += "s"
+    parts.push s
+  if days
+    s = days + " day"
+    if days > 1
+      s += "s"
+    parts.push s
+  if hours
+    s = hours + " hour"
+    if hours > 1
+      hours += "s"
+    parts.push s
+  if minutes
+    s = minutes + " minute"
+    if minutes > 1
+      s += "s"
+    parts.push s
+  if seconds
+    s = seconds + " seconds"
+    if seconds > 1
+      s += "s"
+    parts.push s
+  parts.join(' ')
+
+timestampToString = (timestamp) ->
+  new Date(timestamp * 1000).toISOString().substr 0, 19
+
 class Rig
 
 	constructor: (@robot) ->
@@ -95,6 +132,62 @@ class Rig
                 msg.send text
                 #msg.send "Source: " + NICEHASH_API_URL + "?method=stats.provider.ex&addr=" + address
 
+	history: (msg, address, from, group_size) ->
+
+    #interval_str = secondsToString group_size
+    #since_str = secondsToString (Date.now() / 1000 - from)
+    #msg.send "Earnings for each period of " + interval_str + " in the last " + since_str + " (from oldest to newest):"
+    msg.http(NICEHASH_API_URL)
+      .query(
+        method: 'stats.provider.ex',
+        addr: address,
+        from: from
+      ).get() (err, res, body) ->
+
+        if err
+          msg.send "Nicehash API request failed :cry:"
+          return
+        miner = JSON.parse body
+        if !miner.result.past
+          if miner.result.error
+            msg.send miner.result.error
+          else
+            msg.send "Unexpected response from Nicehash API: \n" + body
+          return
+        t0 = 300 * miner.result.past[0].data[0][0]
+        ts = 0
+        balances = []# balance in satoshis
+        timestamps = []
+        for algo in miner.result.past
+          next_ts = 0
+          j = 0
+          remaining_balance = 0
+          for data in algo.data
+            ts = 300 * data[0]
+            remaining_balance = Math.round(100000000 * data[2])
+            if ts >= next_ts
+              if !balances[j]
+                balances[j] = 0
+              balances[j] = balances[j] + remaining_balance
+              timestamps[j] = ts
+              next_ts = ts + group_size
+              j++
+              remaining_balance = 0
+          if remaining_balance
+            if !balances[j]
+              balances[j] = 0
+            balances[j] = balances[j] + remaining_balance
+            timestamps[j] = ts
+
+        now = Math.floor(Date.now() / 1000)
+        earnings = []
+        for i in [0..balances.length-2]
+          end_ts = timestamps[i] + group_size
+          if end_ts > now
+            end_ts = now
+          earnings[i] = timestampToString(timestamps[i]) + "-" + timestampToString(end_ts) + " (UTC): *" + Math.round((balances[i+1] - balances[i]) / 100) + " μBTC*"
+        msg.send earnings.join("\n")
+
 module.exports = (robot) ->
 
 	rig = new Rig(robot)
@@ -123,6 +216,35 @@ module.exports = (robot) ->
         msg.send "Unknown rig: _" + name + "_"
         return
     msg.send minerPage address
+
+	robot.hear /rig earnings (\d+) days( \w+)?$/i, (msg) ->
+    address = ADDRESSES.default
+    rigname = ""
+    days = msg.match[1]
+    if msg.match.length > 2 && msg.match[2]
+      name = msg.match[2].substr 1
+      address = addressByName name
+      if !address
+        address = name
+        rigname = " for " + address
+      else
+        rigname = " for " + name + "'s rig"
+    msg.send "Loading earnings" + rigname + " for each day in the past " + days + " days..."
+    rig.history(msg, address, Math.floor(Date.now()/1000 - days*24*3600), 24*3600)
+
+	robot.hear /rig earnings( \w+)?$/i, (msg) ->
+    address = ADDRESSES.default
+    rigname = ""
+    if msg.match.length > 1 && msg.match[1]
+      name = msg.match[1].substr 1
+      address = addressByName name
+      if !address
+        address = name
+        rigname = " for " + address
+      else
+        rigname = " for " + name + "'s rig"
+    msg.send "Loading earnings" + rigname + " for each day in the past 7 days..."
+    rig.history(msg, address, Math.floor(Date.now()/1000 - 7*24*3600), 24*3600)
 
 	robot.hear /rig rates?/i, (msg) ->
     msg.http(BTC_QUOTES_URL)
