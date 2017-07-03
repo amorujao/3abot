@@ -154,8 +154,10 @@ class Rig
           else
             msg.send "Unexpected response from Nicehash API: \n" + body
           return
-        t0 = 300 * miner.result.past[0].data[0][0]
-        ts = 0
+        t0 = 0
+        for algo in miner.result.past
+          if algo.data && algo.data.length > 0 && (t0 == 0 || t0 > (300 * algo.data[0][0]))
+            t0 = 300 * algo.data[0][0]
         balances = []# balance in satoshis
         timestamps = []
         for algo in miner.result.past
