@@ -77,9 +77,8 @@ class Rig
     msg.http(NICEHASH_API_URL)
       .query(
         method: 'stats.provider.ex',
-        addr: address,
-        from: Math.floor(Date.now() / 1000))
-      .get() (err, res, body) ->
+        addr: address
+      ).get() (err, res, body) ->
 
         if err
           msg.send "Nicehash API request failed :cry: please use the miner page instead:"
@@ -104,7 +103,7 @@ class Rig
                 profitability += (Number) algo.data[0].a * (Number) algo.profitability
             unpaid_balance += (Number) algo.data[1]
           for payment in miner.result.payments
-            paid_balance += payment.amount
+            paid_balance += (Number) payment.amount
           if algos.length > 0
             msg.send "Mining: " + algos.join(' + ')
           else
