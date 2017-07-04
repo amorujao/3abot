@@ -3,7 +3,7 @@
 #
 
 ADDRESSES = {
-  default: "1MBXSHNF9ttQ6a3sbJ9M98tyqEFgt8LmVm",
+  default: "1MBXSHNF9ttQ6a3sbJ9M98tyqEFgt8LmVm", portugal: "1MBXSHNF9ttQ6a3sbJ9M98tyqEFgt8LmVm",
   ricardo: "1FmV8YK553H2KX7ArZDMCWo2uaW2ZCFCKt",
   holanda: "1GiBJ2hProdj9L4dHkfpKkMcVQ1K2b7b5G",
   maikk: "1Kw17Mk93gzHw3MPEorHPaoUqEJxKG5Y9o",
@@ -205,7 +205,7 @@ module.exports = (robot) ->
         warnUserIfOffline = ""
         msg.send "Loading stats for " + address + "..."
       else
-        warnUserIfOffline = name
+        warnUserIfOffline = name + "-rig-offline"
         msg.send "Loading stats for " + name + "'s rig..."
     rig.status(msg, address, warnUserIfOffline)
 
@@ -219,7 +219,7 @@ module.exports = (robot) ->
         return
     msg.send minerPage address
 
-	robot.hear /rig earnings (\d+) days?( \w+)?$/i, (msg) ->
+	robot.hear /rig earnings (\d+) days?( \w+)?\.?$/i, (msg) ->
     address = ADDRESSES.default
     rigname = ""
     days = msg.match[1]
@@ -234,7 +234,7 @@ module.exports = (robot) ->
     msg.send "Loading earnings" + rigname + " for each day in the past " + days + " days..."
     rig.history(msg, address, Math.floor(Date.now()/1000 - days*24*3600), 24*3600)
 
-	robot.hear /rig earnings( \w+)?$/i, (msg) ->
+	robot.hear /rig earnings( \w+)?\.?$/i, (msg) ->
     address = ADDRESSES.default
     rigname = ""
     if msg.match.length > 1 && msg.match[1]
@@ -247,6 +247,21 @@ module.exports = (robot) ->
         rigname = " for " + name + "'s rig"
     msg.send "Loading earnings" + rigname + " for each day in the past 7 days..."
     rig.history(msg, address, Math.floor(Date.now()/1000 - 7*24*3600), 24*3600)
+
+	robot.hear /rig earnings (\d+) hours?( \w+)?\.?$/i, (msg) ->
+    address = ADDRESSES.default
+    rigname = ""
+    hours = msg.match[1]
+    if msg.match.length > 2 && msg.match[2]
+      name = msg.match[2].substr 1
+      address = addressByName name
+      if !address
+        address = name
+        rigname = " for " + address
+      else
+        rigname = " for " + name + "'s rig"
+    msg.send "Loading earnings" + rigname + " per hour in the past " + hours + " hours..."
+    rig.history(msg, address, Math.floor(Date.now()/1000 - hours*3600), 3600)
 
 	robot.hear /rig rates?/i, (msg) ->
     msg.http(BTC_QUOTES_URL)
