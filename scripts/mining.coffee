@@ -66,6 +66,16 @@ secondsToString = (seconds) ->
     parts.push s
   parts.join(' ')
 
+readableTimeToSeconds = (str) ->
+  if str == "hour"
+    60*60
+  else if str == "day"
+    24*60*60
+  else if str == "week"
+    7*24*60*60
+  else
+    -1
+
 timestampToString = (timestamp) ->
   new Date(timestamp * 1000).toISOString().substr 0, 19
 
@@ -189,11 +199,29 @@ class Rig
           earnings[i] = timestampToString(timestamps[i]) + "-" + timestampToString(end_ts) + " (UTC): *" + Math.round((balances[i+1] - balances[i]) / 100) + " μBTC*"
         msg.send earnings.join("\n")
 
+  earnings: (msg, interval_str, count, rig) ->
+    interval = readableTimeToSeconds interval_str
+    if interval <= 0
+      msg.send "Unsupported time interval: '" + interval_str + "'"
+      return
+    address = ADDRESSES.default
+    rigname = ""
+    hours = msg.match[1]
+    if rig.length > 0
+      address = addressByName rig
+      if !address
+        address = rig
+        rigname = " for " + address
+      else
+        rigname = " for " + rig + "'s rig"
+    msg.send "Loading earnings per " + interval_str + " in the last " + count + " " + interval_str + "s" + rigname + "..."
+    @history(msg, address, Math.floor(Date.now()/1000 - count * interval), interval)
+
 module.exports = (robot) ->
 
 	rig = new Rig(robot)
 
-	robot.hear /rig statu?s( \w+)?/i, (msg) ->
+	robot.hear /rig statu?s( \w+)?\.?$/i, (msg) ->
     address = ADDRESSES.default
     warnUserIfOffline = DEFAULT_RIG_HOST
     if msg.match.length > 1 && msg.match[1]
@@ -208,7 +236,7 @@ module.exports = (robot) ->
         msg.send "Loading stats for " + name + "'s rig..."
     rig.status(msg, address, warnUserIfOffline)
 
-	robot.hear /rig (page|url)( \w+)?/i, (msg) ->
+	robot.hear /rig (page|url)( \w+)?$/i, (msg) ->
     address = ADDRESSES.default
     if msg.match.length > 2 && msg.match[2]
       name = msg.match[2].substr 1
@@ -218,49 +246,11 @@ module.exports = (robot) ->
         return
     msg.send minerPage address
 
-	robot.hear /rig earnings (\d+) days?( \w+)?\.?$/i, (msg) ->
-    address = ADDRESSES.default
-    rigname = ""
-    days = msg.match[1]
-    if msg.match.length > 2 && msg.match[2]
-      name = msg.match[2].substr 1
-      address = addressByName name
-      if !address
-        address = name
-        rigname = " for " + address
-      else
-        rigname = " for " + name + "'s rig"
-    msg.send "Loading earnings" + rigname + " for each day in the past " + days + " days..."
-    rig.history(msg, address, Math.floor(Date.now()/1000 - days*24*3600), 24*3600)
-
-	robot.hear /rig earnings( \w+)?\.?$/i, (msg) ->
-    address = ADDRESSES.default
-    rigname = ""
-    if msg.match.length > 1 && msg.match[1]
-      name = msg.match[1].substr 1
-      address = addressByName name
-      if !address
-        address = name
-        rigname = " for " + address
-      else
-        rigname = " for " + name + "'s rig"
-    msg.send "Loading earnings" + rigname + " for each day in the past 7 days..."
-    rig.history(msg, address, Math.floor(Date.now()/1000 - 7*24*3600), 24*3600)
-
-	robot.hear /rig earnings (\d+) hours?( \w+)?\.?$/i, (msg) ->
-    address = ADDRESSES.default
-    rigname = ""
-    hours = msg.match[1]
-    if msg.match.length > 2 && msg.match[2]
-      name = msg.match[2].substr 1
-      address = addressByName name
-      if !address
-        address = name
-        rigname = " for " + address
-      else
-        rigname = " for " + name + "'s rig"
-    msg.send "Loading earnings" + rigname + " per hour in the past " + hours + " hours..."
-    rig.history(msg, address, Math.floor(Date.now()/1000 - hours*3600), 3600)
+	robot.hear /rig earnings( per day)?\.?$/i, (msg)                      -> rig.earnings(msg, "day",        7,            "")
+	robot.hear /rig earnings per hour\.?$/i, (msg)                        -> rig.earnings(msg, "hour",      24,            "")
+	robot.hear /rig earnings for (\w+)\.?$/i, (msg)                       -> rig.earnings(msg, "day",        7,            msg.match[1])
+	robot.hear /rig earnings per (\w+) limit (\d+)\.?$/i, (msg)           -> rig.earnings(msg, msg.match[1], msg.match[2], "")
+	robot.hear /rig earnings per (\w+) limit (\d+) for (\w+)\.?$/i, (msg) -> rig.earnings(msg, msg.match[1], msg.match[2], msg.match[3])
 
 	robot.hear /rig rates?/i, (msg) ->
     msg.http(BTC_QUOTES_URL)
