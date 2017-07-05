@@ -258,8 +258,12 @@ module.exports = (robot) ->
         return
     msg.send minerPage address
 
-	robot.hear /rig earnings( per day)?\.?$/i, (msg)                      -> rig.earnings(msg, "day",        7,            "")
 	robot.hear /rig earnings per hour\.?$/i, (msg)                        -> rig.earnings(msg, "hour",      24,            "")
+	robot.hear /rig earnings per hour for (\w+)\.?$/i, (msg)              -> rig.earnings(msg, "hour",      24,            msg.match[1])
+	robot.hear /rig earnings( per day)?\.?$/i, (msg)                      -> rig.earnings(msg, "day",        7,            "")
+	robot.hear /rig earnings per day for (\w+)?\.?$/i, (msg)              -> rig.earnings(msg, "day",        7,            msg.match[1])
+	robot.hear /rig earnings per week\.?$/i, (msg)                        -> rig.earnings(msg, "week",       4,            "")
+	robot.hear /rig earnings per week for (\w+)\.?$/i, (msg)              -> rig.earnings(msg, "week",       4,            msg.match[1])
 	robot.hear /rig earnings for (\w+)\.?$/i, (msg)                       -> rig.earnings(msg, "day",        7,            msg.match[1])
 	robot.hear /rig earnings per (\w+) limit (\d+)\.?$/i, (msg)           -> rig.earnings(msg, msg.match[1], msg.match[2], "")
 	robot.hear /rig earnings per (\w+) limit (\d+) for (\w+)\.?$/i, (msg) -> rig.earnings(msg, msg.match[1], msg.match[2], msg.match[3])
