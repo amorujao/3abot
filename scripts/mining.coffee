@@ -8,10 +8,7 @@
 #   rig stats <rig name>
 #   rig rates - Show the current BTC/EUR and BTC/USD exchanges rate
 #   rig earnings - Show daily earnings for the default rig for the last 7 days
-#   rig earnings for <rig name> - Show daily earnings for <rig name> for the last 7 days
-#   rig earnings per <hour|day|week>
-#   rig earnings per <hour|day|week> limit <count>
-#   rig earnings per <hour|day|week> limit <count> for <rig name>
+#   rig earnings( per <hour|day|week>)?( limit <count>)?( for <rig name>)?
 #
 
 ADDRESSES = {
