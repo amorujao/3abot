@@ -145,7 +145,7 @@ class Rig
                   text += "*Earnings/day*: " + round(profitability * 1000000) + " μBTC ≈ *" + profit_eur + " €*\n"
                 text += "*Unpaid*: " + round(unpaid_balance * 1000000) + " μBTC ≈ *" + unpaid_eur + " €*\n"
                 if paid_balance > 0
-                  text += "*Paid*: " + round(paid_balance * 1000000) + " μBTC ≈ *" + paid_eur + " €*\n"
+                  text += "*Recently Paid*: " + round(paid_balance * 1000000) + " μBTC ≈ *" + paid_eur + " €*\n"
                 text += "_1 BTC ≈ " + round(eurbtc, 2) + " €_"
                 msg.send text
                 #msg.send "Source: " + NICEHASH_API_URL + "?method=stats.provider.ex&addr=" + address
