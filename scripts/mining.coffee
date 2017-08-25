@@ -22,7 +22,7 @@ ADDRESSES = {
   wise: "12PH87Hb8iD7YNWpz4MGVr5oE6GjsNsTtN", uaise: "12PH87Hb8iD7YNWpz4MGVr5oE6GjsNsTtN"
 }
 
-DEFAULT_RIG_HOST = "@raspa"
+DEFAULT_RIG_HOST = "@alcobz"
 
 NICEHASH_URL = "https://new.nicehash.com"
 NICEHASH_API_URL = "https://api.nicehash.com/api"
