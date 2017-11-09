@@ -265,7 +265,7 @@ module.exports = (robot) ->
 	robot.hear /rig earnings per (\w+) limit (\d+)\.?$/i, (msg)           -> rig.earnings(msg, msg.match[1], msg.match[2], "")
 	robot.hear /rig earnings per (\w+) limit (\d+) for (\w+)\.?$/i, (msg) -> rig.earnings(msg, msg.match[1], msg.match[2], msg.match[3])
 
-	robot.hear /rig ratez?/i, (msg) ->
+	robot.hear /rig ratez/i, (msg) ->
     if msg.rawMessage.channel.name != "mining-status" && msg.rawMessage.channel.name != "hubot" && msg.rawMessage.channel.name != "Shell"
       msg.send "Please run this on #mining-status instead"
       msg.send JSON.stringify msg.message
