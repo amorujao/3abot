@@ -265,10 +265,17 @@ module.exports = (robot) ->
 	robot.hear /rig earnings per (\w+) limit (\d+)\.?$/i, (msg)           -> rig.earnings(msg, msg.match[1], msg.match[2], "")
 	robot.hear /rig earnings per (\w+) limit (\d+) for (\w+)\.?$/i, (msg) -> rig.earnings(msg, msg.match[1], msg.match[2], msg.match[3])
 
-	robot.hear /rig rates?/i, (msg) ->
+	robot.hear /rig ratez?/i, (msg) ->
     if msg.message.user.room != "mining-status" && msg.message.user.room != "hubot" && msg.message.user.room != "Shell"
       msg.send "Please run this on #mining-status instead"
+      msg.send msg.message.user.room
       return
+    msg.send msg.message.user.room
+    
+	robot.hear /rig rates?/i, (msg) ->
+    #if msg.message.user.room != "mining-status" && msg.message.user.room != "hubot" && msg.message.user.room != "Shell"
+      #msg.send "Please run this on #mining-status instead"
+      #return
     msg.http(BTC_QUOTES_URL)
       .get() (err, res, body) ->
         if err
