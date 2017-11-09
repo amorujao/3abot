@@ -268,7 +268,10 @@ module.exports = (robot) ->
 	robot.hear /rig ratez?/i, (msg) ->
     if msg.message.user.room != "mining-status" && msg.message.user.room != "hubot" && msg.message.user.room != "Shell"
       msg.send "Please run this on #mining-status instead"
-      msg.send msg.message.user.room
+      msg.send JSON.stringify msg.message.user.room
+      msg.send JSON.stringify msg.message.user
+      msg.send JSON.stringify msg.message
+      msg.send JSON.stringify msg
       return
     msg.send msg.message.user.room
     
