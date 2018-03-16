@@ -13,5 +13,5 @@ module.exports = (robot) ->
 	]
 
 	robot.hear /.+/, (msg) ->
-		if msg.message.user.name == 'hugo' && msg.message.text.search(/(yo+|ola|boas)/i) < 0 && Math.random() < 0.01
+		if msg.message.user.name == 'hugo' && msg.message.text.search(/(yo+|ola|boas)/i) < 0 && Math.random() < 0.001
 			msg.send msg.random postResponses
