@@ -51,11 +51,11 @@ module.exports = (robot) ->
 	]
 
 	# Estrangeirismos
-	robot.hear	/applica(c|ç)(a|ã)o/i,			(msg) -> msg.send ":fpf: _aplicação_ :fpf: " + msg.random INSULTS
-	robot.hear	/contracto/i, 				(msg) -> msg.send ":fpf: _contrato_ :fpf: " + msg.random INSULTS
-	robot.hear	/producto/i,				(msg) -> msg.send ":fpf: _produto_ :fpf: " + msg.random INSULTS
+	# robot.hear	/applica(c|ç)(a|ã)o/i,			(msg) -> msg.send ":fpf: _aplicação_ :fpf: " + msg.random INSULTS
+	# robot.hear	/contracto/i, 				(msg) -> msg.send ":fpf: _contrato_ :fpf: " + msg.random INSULTS
+	# robot.hear	/producto/i,				(msg) -> msg.send ":fpf: _produto_ :fpf: " + msg.random INSULTS
 
 	# Misc errors
-	robot.hear	/copy(-|\s)past([^\w]|$)/i,				(msg) -> msg.send ":grammar: _copy-paste_ :grammar: " + msg.random INSULTS
-	robot.hear	/([^\w]|^)([\w]*ç[ei][^\s]*)/i,				(msg) -> msg.send ":grammar: ~" + msg.match[2].trim() + "~ :grammar: " + msg.random INSULTS
-	robot.hear	/([^\w]|^)([\w]*[áàéèíìóòúù][^\s]*mente([^\w]|$))/i,	(msg) -> msg.send ":grammar: ~" + msg.match[2].trim() + "~ :grammar: " + msg.random INSULTS
+	# robot.hear	/copy(-|\s)past([^\w]|$)/i,				(msg) -> msg.send ":grammar: _copy-paste_ :grammar: " + msg.random INSULTS
+	# robot.hear	/([^\w]|^)([\w]*ç[ei][^\s]*)/i,				(msg) -> msg.send ":grammar: ~" + msg.match[2].trim() + "~ :grammar: " + msg.random INSULTS
+	# robot.hear	/([^\w]|^)([\w]*[áàéèíìóòúù][^\s]*mente([^\w]|$))/i,	(msg) -> msg.send ":grammar: ~" + msg.match[2].trim() + "~ :grammar: " + msg.random INSULTS
