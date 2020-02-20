@@ -1,7 +1,7 @@
 module.exports = (robot) ->
 
-	robot.hear /(branco|preto|black|white|cigan|indian|jew)/, (msg) ->
-		if Math.random() < 0.1
+	robot.hear /(branco|branca|preto|preta|black|white|cigan|indian|jew|judeu|judia)/, (msg) ->
+		if Math.random() < 0.08
 			msg.send 'racista'
 
 	robot.hear /(gaja)/, (msg) ->
