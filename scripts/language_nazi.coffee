@@ -59,3 +59,4 @@ module.exports = (robot) ->
 	# robot.hear	/copy(-|\s)past([^\w]|$)/i,				(msg) -> msg.send ":grammar: _copy-paste_ :grammar: " + msg.random INSULTS
 	# robot.hear	/([^\w]|^)([\w]*ç[ei][^\s]*)/i,				(msg) -> msg.send ":grammar: ~" + msg.match[2].trim() + "~ :grammar: " + msg.random INSULTS
 	# robot.hear	/([^\w]|^)([\w]*[áàéèíìóòúù][^\s]*mente([^\w]|$))/i,	(msg) -> msg.send ":grammar: ~" + msg.match[2].trim() + "~ :grammar: " + msg.random INSULTS
+	# robot.hear	/(c|k)usta(-|\s)me a querer/i,				(msg) -> msg.send "a querer ou a crer?"
