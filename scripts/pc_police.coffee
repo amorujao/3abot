@@ -6,4 +6,4 @@ module.exports = (robot) ->
 
 	robot.hear /(gaja)/, (msg) ->
 		if Math.random() < 0.2
-			msg.send 'sexista'
+			msg.send 'falocrata'
